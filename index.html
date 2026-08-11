@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rigging e Animação Básica · UC Elementos Multimídia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #1b1b1e; --bg-raised: #232327; --bg-panel: #29292e; --line: #3a3a40;
+  --text: #ecebe7; --text-dim: #a3a2a8; --text-faint: #6b6a70;
+  --accent: #ef7d22; --accent-dim: #b45a17;
+  --axis-x: #e5484d; --axis-y: #4c9f4c; --axis-z: #3b82c4;
+  --radius: 6px;
+  --display: 'Space Grotesk', sans-serif; --body: 'Inter', sans-serif; --mono: 'JetBrains Mono', monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;} }
+body{margin:0; background:var(--bg); color:var(--text); font-family:var(--body); line-height:1.6; font-size:16px;}
+a{color:var(--accent);}
+a:focus-visible, button:focus-visible{outline:2px solid var(--accent); outline-offset:3px;}
+.grid-bg{position:fixed; inset:0; z-index:-1; background-image:linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size:64px 64px; opacity:0.18; mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);}
+.topbar{position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0.9rem 1.75rem; background:rgba(27,27,30,0.88); backdrop-filter: blur(10px); border-bottom:1px solid var(--line); flex-wrap:wrap;}
+.topbar .brand{font-family:var(--display); font-weight:600; font-size:0.95rem; letter-spacing:0.01em; color:var(--text); display:flex; align-items:center; gap:0.6rem; text-decoration:none;}
+.topbar .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent); box-shadow:0 0 10px var(--accent); flex-shrink:0;}
+.topbar .eyebrow{color:var(--text-faint); font-size:0.78rem; font-family:var(--mono);}
+.topnav{display:flex; gap:1.35rem; flex-wrap:wrap;}
+.topnav a{color:var(--text-dim); text-decoration:none; font-size:0.85rem; font-family:var(--mono); transition:color 0.15s;}
+.topnav a:hover{color:var(--accent);}
+.wrap{max-width:920px; margin:0 auto; padding:0 1.75rem;}
+.hero{padding:5.5rem 0 4rem; position:relative;}
+.hero .kicker{font-family:var(--mono); color:var(--accent); font-size:0.85rem; letter-spacing:0.06em; text-transform:uppercase; display:flex; align-items:center; gap:0.6rem; margin-bottom:1.4rem;}
+.hero .kicker::before{content:""; width:28px; height:1px; background:var(--accent);}
+.hero h1{font-family:var(--display); font-size:clamp(2.1rem, 5vw, 3.4rem); line-height:1.08; font-weight:700; margin:0 0 1.3rem; max-width:16ch;}
+.hero h1 em{font-style:normal; color:var(--accent);}
+.hero p.lead{font-size:1.12rem; color:var(--text-dim); max-width:58ch; margin:0 0 2.2rem;}
+.hero-meta{display:flex; gap:2.2rem; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:1.4rem; margin-top:1rem;}
+.hero-meta .item{font-size:0.82rem; color:var(--text-faint); font-family:var(--mono);}
+.hero-meta .item strong{display:block; color:var(--text); font-family:var(--body); font-size:0.95rem; font-weight:600; margin-top:0.15rem;}
+section{padding:4.2rem 0; border-top:1px solid var(--line);}
+.sec-head{display:flex; align-items:baseline; gap:1rem; margin-bottom:1.8rem; flex-wrap:wrap;}
+.sec-num{font-family:var(--mono); color:var(--accent); font-size:0.95rem; flex-shrink:0;}
+.sec-head h2{font-family:var(--display); font-size:1.7rem; margin:0; font-weight:600;}
+.sec-sub{color:var(--text-dim); font-size:0.9rem; margin:-1rem 0 1.8rem;}
+p{color:var(--text-dim);}
+.lead-in{color:var(--text); font-size:1.02rem;}
+.kbd{font-family:var(--mono); background:var(--bg-panel); border:1px solid var(--line); border-bottom-width:2px; color:var(--text); padding:0.12rem 0.5rem; border-radius:4px; font-size:0.82rem; white-space:nowrap;}
+.feat-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:1rem; margin:1.5rem 0;}
+@media (max-width:640px){ .feat-grid{grid-template-columns:1fr;} }
+.feat-card{background:var(--bg-raised); border:1px solid var(--line); border-radius:var(--radius); padding:1.2rem 1.3rem;}
+.feat-card h3{font-family:var(--display); font-size:1rem; margin:0 0 0.5rem; color:var(--text); display:flex; align-items:center; gap:0.5rem;}
+.feat-card p{margin:0; font-size:0.92rem;}
+.transform-table{width:100%; border-collapse:collapse; margin:1.5rem 0 2rem; font-size:0.9rem;}
+.transform-table th, .transform-table td{text-align:left; padding:0.7rem 0.9rem; border-bottom:1px solid var(--line);}
+.transform-table th{font-family:var(--mono); color:var(--text-faint); font-weight:500; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.04em;}
+.transform-table td{color:var(--text-dim);}
+.transform-table td:first-child{color:var(--text); font-weight:600;}
+.callout{background:var(--bg-raised); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; padding:1.1rem 1.4rem; margin:1.6rem 0; font-size:0.92rem;}
+.callout strong{color:var(--accent); font-family:var(--mono); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:0.4rem;}
+.callout p{margin:0; color:var(--text);}
+.callout.warn{border-left-color:var(--axis-x);}
+.callout.warn strong{color:var(--axis-x);}
+.callout.good{border-left-color:var(--axis-y);}
+.callout.good strong{color:var(--axis-y);}
+.steps{display:grid; gap:1rem; margin:1.8rem 0;}
+.step{display:grid; grid-template-columns:44px 1fr; gap:1.1rem; align-items:start; background:var(--bg-raised); border:1px solid var(--line); border-radius:var(--radius); padding:1.1rem 1.3rem;}
+.step-num{width:32px; height:32px; border-radius:50%; background:var(--bg-panel); border:1px solid var(--accent-dim); color:var(--accent); font-family:var(--mono); font-weight:700; font-size:0.9rem; display:flex; align-items:center; justify-content:center;}
+.step h4{margin:0 0 0.35rem; font-family:var(--body); font-weight:600; font-size:0.98rem; color:var(--text);}
+.step p{margin:0; font-size:0.9rem;}
+.step .why{margin-top:0.5rem; font-size:0.82rem; color:var(--text-faint); font-style:italic;}
+.trouble-grid{display:grid; gap:0.9rem; margin:1.6rem 0;}
+.trouble-item{display:grid; grid-template-columns:1fr 1fr; gap:1rem; background:var(--bg-raised); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+@media (max-width:640px){ .trouble-item{grid-template-columns:1fr;} }
+.trouble-item .prob, .trouble-item .fix{padding:1rem 1.2rem;}
+.trouble-item .prob{border-right:1px solid var(--line); background:rgba(229,72,77,0.06);}
+@media (max-width:640px){ .trouble-item .prob{border-right:none; border-bottom:1px solid var(--line);} }
+.trouble-item .fix{background:rgba(76,159,76,0.06);}
+.trouble-item .tag{font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:0.35rem;}
+.trouble-item .prob .tag{color:var(--axis-x);}
+.trouble-item .fix .tag{color:var(--axis-y);}
+.trouble-item p{margin:0; font-size:0.87rem; color:var(--text);}
+.roadmap{display:grid; gap:0.6rem; margin:1.8rem 0;}
+.rm-item{display:grid; grid-template-columns:44px 1fr auto; align-items:center; gap:1rem; padding:0.85rem 1.1rem; border:1px solid var(--line); border-radius:var(--radius); background:var(--bg-raised);}
+.rm-item.active{border-color:var(--accent); background:linear-gradient(90deg, rgba(239,125,34,0.1), transparent);}
+.rm-item.done{opacity:0.7;}
+.rm-num{font-family:var(--mono); color:var(--text-faint); font-size:0.95rem;}
+.rm-item.active .rm-num{color:var(--accent); font-weight:700;}
+.rm-title{font-weight:600; font-size:0.94rem;}
+.rm-item.active .rm-title{color:var(--text);}
+.rm-item:not(.active) .rm-title{color:var(--text-dim);}
+.rm-tag{font-family:var(--mono); font-size:0.7rem; color:var(--text-faint); border:1px solid var(--line); padding:0.2rem 0.55rem; border-radius:100px; white-space:nowrap;}
+.rm-item.active .rm-tag{color:var(--accent); border-color:var(--accent-dim);}
+.exercise{background:var(--bg-raised); border:1px solid var(--line); border-radius:var(--radius); padding:1.8rem 2rem; margin:1.8rem 0;}
+.exercise .ex-kicker{font-family:var(--mono); color:var(--accent); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.6rem;}
+.exercise h3{font-family:var(--display); margin:0 0 1rem; font-size:1.2rem;}
+.exercise ol{padding-left:1.3rem; margin:0; color:var(--text-dim);}
+.exercise li{margin-bottom:0.75rem; padding-left:0.2rem;}
+.exercise li::marker{font-family:var(--mono); color:var(--accent);}
+.foot-nav{padding:3.5rem 0 4rem; border-top:1px solid var(--line);}
+.foot-nav-inner{display:flex; justify-content:space-between; align-items:center; gap:1.5rem; flex-wrap:wrap;}
+.foot-prev, .foot-next{text-decoration:none; display:flex; flex-direction:column; gap:0.3rem;}
+.foot-next{align-items:flex-end;}
+.foot-prev .fn-label, .foot-next .fn-label{font-family:var(--mono); color:var(--text-faint); font-size:0.75rem; text-transform:uppercase;}
+.foot-prev .fn-title, .foot-next .fn-title{font-family:var(--display); color:var(--text); font-size:1.1rem; font-weight:600; display:flex; align-items:center; gap:0.5rem;}
+.foot-prev:hover .fn-title, .foot-next:hover .fn-title{color:var(--accent);}
+.foot-meta{text-align:center; color:var(--text-faint); font-size:0.78rem; margin-top:3rem; font-family:var(--mono);}
+
+/* rig diagram */
+.rig-diagram{display:flex; justify-content:center; margin:1.8rem 0;}
+.rig-diagram svg{width:100%; max-width:280px; height:auto;}
+
+.pose-compare{display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin:1.8rem 0;}
+@media (max-width:640px){ .pose-compare{grid-template-columns:1fr;} }
+.pose-card{background:var(--bg-raised); border:1px solid var(--line); border-radius:var(--radius); padding:1.2rem; text-align:center;}
+.pose-card svg{width:100%; max-width:150px; height:auto; margin-bottom:0.6rem;}
+.pose-card h4{font-family:var(--display); font-size:0.95rem; margin:0 0 0.2rem;}
+.pose-card .frame{font-family:var(--mono); color:var(--accent); font-size:0.78rem;}
+
+/* final checklist all series */
+.final-checklist{display:grid; gap:0.6rem; margin:1.6rem 0;}
+.fc-row{display:grid; grid-template-columns:60px 1fr; gap:1rem; align-items:center; padding:0.75rem 1rem; background:var(--bg-raised); border:1px solid var(--line); border-radius:var(--radius);}
+.fc-row .fc-site{font-family:var(--mono); color:var(--accent); font-size:0.78rem; font-weight:700;}
+.fc-row p{margin:0; font-size:0.88rem; color:var(--text);}
+
+.checklist{display:grid; gap:0.7rem; margin:1.6rem 0;}
+.check-row{display:grid; grid-template-columns:24px 1fr; gap:0.8rem; align-items:start; padding:0.7rem 0.9rem; background:var(--bg-raised); border:1px solid var(--line); border-radius:var(--radius);}
+.check-row .box{width:18px; height:18px; border:1.5px solid var(--accent); border-radius:4px; margin-top:0.15rem;}
+.check-row p{margin:0; font-size:0.9rem; color:var(--text);}
+.check-row span{color:var(--text-faint); font-size:0.82rem;}
+</style>
+</head>
+<body>
+<div class="grid-bg" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span>Blender para Jogos <span class="eyebrow">· Site 7/7</span></a>
+  <nav class="topnav" aria-label="Navegação da página">
+    <a href="#armature">Armature e bones</a>
+    <a href="#pesos">Weight painting</a>
+    <a href="#guia">Guia: rig da tampa</a>
+    <a href="#animacao">Animação</a>
+    <a href="#fechamento">Fechamento da série</a>
+  </nav>
+</header>
+
+<main class="wrap" id="top">
+
+  <section class="hero" style="border-top:none; padding-top:4.5rem;">
+    <p class="kicker">Planejamento e Produção de Elementos Multimídia de Jogos Digitais</p>
+    <h1>O baú <em>ganha movimento</em>.</h1>
+    <p class="lead">Última etapa da série: a tampa do baú recebe um osso simples e uma animação de abertura. É um rig deliberadamente básico — o objetivo é entender o conceito, não dominar rigging de personagens complexos.</p>
+    <div class="hero-meta">
+      <div class="item">Parte anterior<strong>Site 6 · Exportação</strong></div>
+      <div class="item">Arquivo de partida<strong>bau_v05.blend</strong></div>
+      <div class="item">Você vai sair com<strong>bau_v06_rig.blend</strong></div>
+      <div class="item">Etapa final<strong>Série completa (7/7)</strong></div>
+    </div>
+  </section>
+
+  <section id="armature">
+    <div class="sec-head"><span class="sec-num">01</span><h2>O que é um armature (esqueleto)</h2></div>
+    <p class="lead-in">Um <strong style="color:var(--text)">armature</strong> é um objeto especial do Blender feito de <strong style="color:var(--text)">bones</strong> (ossos) — uma estrutura hierárquica que controla a deformação de uma malha sem precisar mexer nela diretamente.</p>
+
+    <div class="rig-diagram">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <g fill="none" stroke="var(--line)" stroke-width="2">
+          <path d="M30 130 L30 170 L170 170 L170 130 Z"/>
+          <path d="M30 130 Q100 105 170 130"/>
+        </g>
+        <g stroke="var(--accent)" stroke-width="3">
+          <line x1="30" y1="130" x2="100" y2="115"/>
+        </g>
+        <circle cx="30" cy="130" r="6" fill="var(--accent)"/>
+        <circle cx="100" cy="115" r="4" fill="var(--accent)"/>
+        <text x="15" y="150" font-family="JetBrains Mono" font-size="10" fill="var(--text-faint)">raiz</text>
+        <text x="95" y="105" font-family="JetBrains Mono" font-size="10" fill="var(--text-faint)">tip</text>
+      </svg>
+    </div>
+
+    <div class="feat-grid">
+      <div class="feat-card">
+        <h3>Bone</h3>
+        <p>Um segmento com "raiz" (base) e "tip" (ponta), que define um eixo de rotação. Um personagem completo pode ter dezenas de bones; nosso baú precisa de apenas um, na dobradiça da tampa.</p>
+      </div>
+      <div class="feat-card">
+        <h3>Edit Mode do armature</h3>
+        <p>Assim como uma malha, o armature tem seu próprio Edit Mode (<span class="kbd">Tab</span>) para posicionar e criar bones — separado do Edit Mode da malha do baú.</p>
+      </div>
+      <div class="feat-card">
+        <h3>Pose Mode</h3>
+        <p>Modo específico para <em>posar</em> o armature (rotacionar bones) sem alterar sua estrutura — é aqui que a tampa efetivamente "abre" ao rotacionar o bone.</p>
+      </div>
+      <div class="feat-card">
+        <h3>Parenting</h3>
+        <p>O processo de "vincular" a malha (Bau_Tampa) ao armature, para que o movimento do bone passe a mover a malha.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pesos">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Weight Painting: por que o baú não precisa</h2></div>
+    <p class="lead-in">Em personagens, cada vértice tem um "peso" (0 a 1) indicando o quanto ele é influenciado por cada bone — é assim que um cotovelo dobra suavemente em vez de quebrar. Isso se chama <strong style="color:var(--text)">Weight Painting</strong>.</p>
+    <div class="callout good">
+      <strong>O caso do baú é o mais simples possível</strong>
+      <p>A tampa inteira se move junto com um único bone — não há deformação parcial, então todos os vértices da tampa têm peso 1.0 para esse bone. O Blender resolve isso automaticamente ao usar "Automatic Weights" no parenting, sem precisar pintar peso manualmente.</p>
+    </div>
+    <p>Vale entender o conceito porque é o mesmo princípio usado em qualquer personagem articulado — só que lá, cada bone (braço, perna, coluna) influencia parcialmente vértices próximos às articulações, exigindo ajuste manual da pintura de peso para o resultado ficar natural.</p>
+  </section>
+
+  <section id="guia">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Guia passo a passo — rig da tampa</h2></div>
+    <p class="sec-sub">Continue a partir de <span class="kbd">bau_v05.blend</span> do Site 5/6. Lembre-se: a origem da tampa já foi posicionada na borda traseira no Site 2 — é exatamente ali que o bone precisa nascer.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <h4>Adicione o armature na posição da dobradiça</h4>
+          <p>Posicione o 3D Cursor na origem do <span class="kbd">Bau_Tampa</span> (Shift+S → Cursor to Selected, com a tampa selecionada em Object Mode), depois <span class="kbd">Shift+A</span> → Armature. Um bone único aparece nessa posição.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <h4>Ajuste o bone para cobrir a tampa</h4>
+          <p>Em Edit Mode do armature, selecione o tip do bone e mova (<span class="kbd">G</span>) para se estender ao longo da tampa, na direção em que ela vai abrir.</p>
+          <p class="why">Por quê: o eixo do bone (da raiz ao tip) define em torno de que linha a rotação acontece — precisa acompanhar a direção real da dobradiça.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <h4>Renomeie o bone e o armature</h4>
+          <p>No Outliner, renomeie o armature para <span class="kbd">Bau_Rig</span> e o bone para <span class="kbd">Dobradica_Tampa</span>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>
+          <h4>Vincule a tampa ao armature</h4>
+          <p>Volte para Object Mode. Selecione primeiro <span class="kbd">Bau_Tampa</span>, depois <span class="kbd">Bau_Rig</span> (shift+clique, o armature precisa ser o último/ativo), e use <span class="kbd">Ctrl+P</span> → With Automatic Weights.</p>
+          <p class="why">Por quê: a ordem de seleção importa — o Blender vincula o(s) objeto(s) selecionado(s) primeiro ao objeto ativo por último.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div>
+          <h4>Teste em Pose Mode</h4>
+          <p>Selecione o armature, entre em Pose Mode, selecione o bone e rotacione com <span class="kbd">R</span> <span class="kbd">X</span> (ou o eixo correspondente à dobradiça). A tampa inteira deve girar junto, abrindo o baú.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="animacao">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Uma animação simples: abrir e fechar</h2></div>
+    <p class="sec-sub">Keyframes marcam o valor de uma propriedade (aqui, a rotação do bone) em quadros específicos da timeline — o Blender interpola tudo entre eles.</p>
+
+    <div class="pose-compare">
+      <div class="pose-card">
+        <svg viewBox="0 0 120 100" aria-hidden="true">
+          <g fill="none" stroke="var(--accent)" stroke-width="2">
+            <path d="M20 60 L20 90 L100 90 L100 60 Z"/>
+            <path d="M20 60 Q60 40 100 60"/>
+          </g>
+        </svg>
+        <h4>Fechado</h4>
+        <span class="frame">Frame 1</span>
+      </div>
+      <div class="pose-card">
+        <svg viewBox="0 0 120 100" aria-hidden="true">
+          <g fill="none" stroke="var(--accent)" stroke-width="2">
+            <path d="M20 60 L20 90 L100 90 L100 60 Z"/>
+            <path d="M20 60 L45 15"/>
+            <path d="M45 15 L100 60"/>
+          </g>
+        </svg>
+        <h4>Aberto</h4>
+        <span class="frame">Frame 24</span>
+      </div>
+    </div>
+
+    <table class="transform-table">
+      <thead><tr><th>Passo</th><th>Ação</th></tr></thead>
+      <tbody>
+        <tr><td>1. Posição inicial</td><td>Na timeline, vá para o frame 1, deixe o bone na posição "fechada" e pressione <span class="kbd">I</span> → Rotation para inserir um keyframe</td></tr>
+        <tr><td>2. Posição final</td><td>Avance para o frame 24 (1 segundo em 24fps), rotacione o bone para a posição "aberta" e insira outro keyframe com <span class="kbd">I</span> → Rotation</td></tr>
+        <tr><td>3. Conferir</td><td>Volte ao frame 1 e pressione <span class="kbd">Espaço</span> (ou o botão Play na timeline) para reproduzir a animação</td></tr>
+        <tr><td>4. Suavizar (opcional)</td><td>No Graph Editor, ajuste a curva de interpolação de "Linear" para "Ease In/Out" para um movimento menos mecânico</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>Exportando com animação</strong>
+      <p>Retomando o Site 6: ao exportar como FBX, marque a opção <span class="kbd">Include → Animation</span> no painel de exportação. A engine então recebe o clipe de abertura pronto para ser disparado por script (ex: ao jogador interagir com o baú).</p>
+    </div>
+  </section>
+
+  <section id="fechamento">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Fechando a série: o pipeline completo</h2></div>
+    <p class="lead-in">Do cubo padrão a um asset animado, exportável e pronto para qualquer engine — este foi o caminho:</p>
+
+    <div class="final-checklist">
+      <div class="fc-row"><span class="fc-site">Site 1</span><p>Interface, navegação, Object/Edit Mode, comparação Jogos × Animação × Impressão 3D</p></div>
+      <div class="fc-row"><span class="fc-site">Site 2</span><p>Modelagem poligonal — corpo e tampa do baú com Extrude, Inset, Bevel, Loop Cut</p></div>
+      <div class="fc-row"><span class="fc-site">Site 3</span><p>UV Unwrapping — seams, Smart UV Project, empacotamento de ilhas</p></div>
+      <div class="fc-row"><span class="fc-site">Site 4</span><p>Materiais PBR — Principled BSDF, madeira e metal com Base Color/Roughness/Metallic</p></div>
+      <div class="fc-row"><span class="fc-site">Site 5</span><p>Otimização — poly budget, conceito de bake, limpeza de malha, checklist game-ready</p></div>
+      <div class="fc-row"><span class="fc-site">Site 6</span><p>Exportação — FBX e glTF, eixos, escala, panorama por engine</p></div>
+      <div class="fc-row"><span class="fc-site">Site 7</span><p>Rigging e animação — armature, bone único, parenting, keyframes de abertura</p></div>
+    </div>
+
+    <div class="checklist">
+      <div class="check-row"><div class="box"></div><p>O baú existe como dois objetos organizados e nomeados <span>(Bau_Corpo, Bau_Tampa)</span></p></div>
+      <div class="check-row"><div class="box"></div><p>UV desdobrada sem distorção visível e materiais PBR aplicados corretamente</p></div>
+      <div class="check-row"><div class="box"></div><p>Contagem de triângulos dentro do orçamento definido para o tipo de prop</p></div>
+      <div class="check-row"><div class="box"></div><p>Exportado com sucesso em FBX e/ou glTF, testado numa engine</p></div>
+      <div class="check-row"><div class="box"></div><p>Rig simples funcional, com animação de abertura reproduzível</p></div>
+    </div>
+
+    <div class="callout good">
+      <strong>E agora?</strong>
+      <p>O mesmo fluxo — modelar, desdobrar, texturizar, otimizar, exportar, (opcionalmente) animar — se aplica a qualquer outro prop do seu jogo. Um personagem completo vai exigir mais bones e weight painting manual, mas o pipeline de base é exatamente este.</p>
+    </div>
+  </section>
+
+  <section id="roteiro">
+    <div class="sec-head"><span class="sec-num">06</span><h2>A série completa</h2></div>
+    <div class="roadmap">
+      <div class="rm-item done"><span class="rm-num">01</span><span class="rm-title">Fundamentos do Blender</span><span class="rm-tag">concluído</span></div>
+      <div class="rm-item done"><span class="rm-num">02</span><span class="rm-title">Modelagem (Poly Modeling)</span><span class="rm-tag">concluído</span></div>
+      <div class="rm-item done"><span class="rm-num">03</span><span class="rm-title">UV Unwrapping</span><span class="rm-tag">concluído</span></div>
+      <div class="rm-item done"><span class="rm-num">04</span><span class="rm-title">Materiais e Shading (PBR)</span><span class="rm-tag">concluído</span></div>
+      <div class="rm-item done"><span class="rm-num">05</span><span class="rm-title">Otimização para game-ready assets</span><span class="rm-tag">concluído</span></div>
+      <div class="rm-item done"><span class="rm-num">06</span><span class="rm-title">Exportação e integração com engines</span><span class="rm-tag">concluído</span></div>
+      <div class="rm-item active"><span class="rm-num">07</span><span class="rm-title">Rigging e Animação básica</span><span class="rm-tag">você está aqui</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot-nav">
+  <div class="wrap foot-nav-inner">
+    <a class="foot-prev" href="../blender-exportacao/index.html">
+      <span class="fn-label">← Anterior · Site 6 de 7</span>
+      <span class="fn-title">Exportação e integração com engines</span>
+    </a>
+    <a class="foot-next" href="../blender-fundamentos/index.html">
+      <span class="fn-label">Rever a série</span>
+      <span class="fn-title">Voltar ao Site 1 →</span>
+    </a>
+  </div>
+  <p class="wrap foot-meta">Planejamento e Produção de Elementos Multimídia de Jogos Digitais · Blender para Jogos · Site 7: Rigging e Animação — Série completa</p>
+</footer>
+
+</body>
+</html>
