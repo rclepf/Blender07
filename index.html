@@ -276,7 +276,7 @@ p{color:var(--text-dim);}
       </div></div>
       <div class="step"><div class="step-num">12</div><div>
         <h4>Corrija com os pincéis</h4>
-        <p>Use os pincéis <em>Adicionar</em>, <em>Subtrair</em> e <em>Desfocar</em> (blur), ajustando Peso e Força no cabeçalho. Ciclo de trabalho: <strong style="color:var(--text)">posar → pintar → testar outra pose → pintar de novo</strong>. Ao terminar, use o menu Pesos → <em>Normalizar tudo</em>.</p>
+        <p>Use o pincel <em>Pintar</em> com <em>Peso</em> 1 para dar influência e com Peso 0 para tirar, e o pincel <em>Desfocar</em> (Blur) para suavizar a transição; ajuste Peso, Raio e Força no cabeçalho. Ciclo de trabalho: <strong style="color:var(--text)">posar → pintar → testar outra pose → pintar de novo</strong>. Ao terminar, use o menu Pesos → <em>Normalizar tudo</em>.</p>
         <p class="why">Por quê: os pesos automáticos acertam a maior parte, mas costumam errar nas dobras. Normalizar garante que a soma das influências em cada vértice seja 1.</p>
       </div></div>
     </div>
@@ -424,8 +424,8 @@ p{color:var(--text-dim);}
     <table class="transform-table">
       <thead><tr><th>Passo</th><th>Ação</th></tr></thead>
       <tbody>
-        <tr><td>1. Posição inicial</td><td>Na timeline, vá para o frame 1, deixe o bone na posição "fechada" e pressione <span class="kbd">I</span> → Rotation para inserir um keyframe</td></tr>
-        <tr><td>2. Posição final</td><td>Avance para o frame 24 (1 segundo em 24fps), rotacione o bone para a posição "aberta" e insira outro keyframe com <span class="kbd">I</span> → Rotation</td></tr>
+        <tr><td>1. Posição inicial</td><td>Na timeline, vá para o frame 1, deixe o bone na posição "fechada" e pressione <span class="kbd">I</span> para inserir um keyframe (para gravar só a rotação, use <span class="kbd">K</span> → Rotação)</td></tr>
+        <tr><td>2. Posição final</td><td>Avance para o frame 24 (1 segundo em 24fps), rotacione o bone para a posição "aberta" e insira outro keyframe com <span class="kbd">I</span></td></tr>
         <tr><td>3. Conferir</td><td>Volte ao frame 1 e pressione <span class="kbd">Espaço</span> (ou o botão Play na timeline) para reproduzir a animação</td></tr>
         <tr><td>4. Suavizar (opcional)</td><td>No Graph Editor, ajuste a curva de interpolação de "Linear" para "Ease In/Out" para um movimento menos mecânico</td></tr>
       </tbody>
