@@ -140,10 +140,9 @@ p{color:var(--text-dim);}
   <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span>Blender para Jogos <span class="eyebrow">· Site 7/9</span></a>
   <nav class="topnav" aria-label="Navegação da página">
     <a href="#armature">Armature e bones</a>
-    <a href="#pesos">Weight painting</a>
+    <a href="#rigging">Rigging passo a passo</a>
     <a href="#guia">Guia: rig da tampa</a>
     <a href="#animacao">Animação</a>
-    <a href="#estudo">Estudo guiado</a>
     <a href="#fechamento">Fechamento da série</a>
   </nav>
 </header>
@@ -153,11 +152,11 @@ p{color:var(--text-dim);}
   <section class="hero" style="border-top:none; padding-top:4.5rem;">
     <p class="kicker">Planejamento e Produção de Elementos Multimídia de Jogos Digitais</p>
     <h1>O baú <em>ganha movimento</em>.</h1>
-    <p class="lead">Última etapa da série: a tampa do baú recebe um osso simples e uma animação de abertura. É um rig deliberadamente básico — o objetivo é entender o conceito, não dominar rigging de personagens complexos.</p>
+    <p class="lead">Primeiro você aprende rigging de verdade num tentáculo — cadeia de ossos, pesos, controle IK e animação em loop. Depois aplica a mesma receita no baú: a tampa recebe um osso e uma animação de abertura.</p>
     <div class="hero-meta">
       <div class="item">Parte anterior<strong>Site 6 · Exportação</strong></div>
       <div class="item">Arquivo de partida<strong>bau_v05.blend</strong></div>
-      <div class="item">Você vai sair com<strong>bau_v06_rig.blend</strong></div>
+      <div class="item">Você vai sair com<strong>tentaculo_rig.blend + bau_v06_rig.blend</strong></div>
       <div class="item">Etapa final<strong>Série completa (7/7)</strong></div>
     </div>
   </section>
@@ -202,9 +201,146 @@ p{color:var(--text-dim);}
     </div>
   </section>
 
+  <section id="rigging">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Rigging simples, passo a passo</h2></div>
+    <p class="sec-sub">Antes do baú, monte um rig completo em um objeto que <em>dobra</em>: um tentáculo. Nele aparecem todas as peças do rigging — cadeia de ossos, hierarquia, pesos, um osso de controle com restrição e uma animação. Comece um arquivo novo e salve como <span class="kbd">tentaculo_rig.blend</span>.</p>
+
+    <h3 style="font-family:var(--display); margin:2rem 0 0;">Parte A — A malha</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div>
+        <h4>Crie o cilindro</h4>
+        <p>Em um arquivo <em>Geral</em>, apague o cubo (<span class="kbd">X</span>). <span class="kbd">Shift+A</span> → Malha → Cilindro. No painel <em>Ajustar última operação</em> (canto inferior esquerdo): Vértices <span class="kbd">16</span>, Raio <span class="kbd">0.3</span>, Profundidade <span class="kbd">4</span>.</p>
+      </div></div>
+      <div class="step"><div class="step-num">2</div><div>
+        <h4>Apoie no chão e aplique</h4>
+        <p>Suba o cilindro com <span class="kbd">G</span> <span class="kbd">Z</span> <span class="kbd">2</span> <span class="kbd">Enter</span>, para a base ficar em Z = 0. Depois <span class="kbd">Ctrl+A</span> → Todas as transformações. Renomeie para <span class="kbd">Tentaculo</span> (<span class="kbd">F2</span>).</p>
+        <p class="why">Por quê: escala e rotação não aplicadas são a causa número 1 de deformações estranhas no rigging.</p>
+      </div></div>
+      <div class="step"><div class="step-num">3</div><div>
+        <h4>Adicione divisões</h4>
+        <p>No Modo de edição (<span class="kbd">Tab</span>), use <span class="kbd">Ctrl+R</span> sobre a lateral do cilindro, gire a roda do mouse até ter uns <span class="kbd">12</span> cortes horizontais, clique e depois clique com o botão direito para não deslizar. Volte com <span class="kbd">Tab</span>.</p>
+        <p class="why">Por quê: a malha só dobra onde existem vértices. Sem cortes, o tentáculo entorta como um cano rígido.</p>
+      </div></div>
+    </div>
+
+    <h3 style="font-family:var(--display); margin:2rem 0 0;">Parte B — O esqueleto</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">4</div><div>
+        <h4>Adicione a armação na base</h4>
+        <p>Coloque o cursor 3D na origem do mundo (<span class="kbd">Shift+S</span> → Cursor para origem do mundo) e adicione <span class="kbd">Shift+A</span> → Armação. Nasce um osso com a <strong style="color:var(--text)">cabeça</strong> (base) em Z = 0 e a <strong style="color:var(--text)">cauda</strong> (ponta) em Z = 1. Renomeie a armação para <span class="kbd">Rig_Tentaculo</span>.</p>
+      </div></div>
+      <div class="step"><div class="step-num">5</div><div>
+        <h4>Deixe os ossos visíveis</h4>
+        <p>Com a armação selecionada, abra a aba <em>Dados do objeto</em> (ícone de boneco verde) → Exibição de viewport e marque <em>Na frente</em> e <em>Nomes</em>.</p>
+        <p class="why">Por quê: os ossos ficam dentro da malha; sem "Na frente" você não consegue vê-los nem selecioná-los.</p>
+      </div></div>
+      <div class="step"><div class="step-num">6</div><div>
+        <h4>Extrude a cadeia</h4>
+        <p>Entre no Modo de edição da armação (<span class="kbd">Tab</span>), clique só na esfera da ponta do osso e pressione <span class="kbd">E</span> <span class="kbd">Z</span> <span class="kbd">1</span> <span class="kbd">Enter</span>. Repita até ter <strong style="color:var(--text)">4 ossos</strong> chegando ao topo do cilindro (Z = 4).</p>
+        <p class="why">Por quê: cada osso extrudado já nasce como <em>filho conectado</em> do anterior — a cabeça dele fica grudada na cauda do pai, formando uma corrente.</p>
+      </div></div>
+      <div class="step"><div class="step-num">7</div><div>
+        <h4>Nomeie os ossos</h4>
+        <p>Selecione cada osso e renomeie com <span class="kbd">F2</span>: <span class="kbd">Tent_01</span> (base) até <span class="kbd">Tent_04</span> (ponta). Em personagens, ossos de lados opostos levam os sufixos <span class="kbd">.L</span> e <span class="kbd">.R</span>, o que permite espelhar poses e pesos.</p>
+      </div></div>
+    </div>
+
+    <div class="callout">
+      <strong>Hierarquia: quem é pai de quem</strong>
+      <p>Selecione <span class="kbd">Tent_02</span> e abra a aba <em>Osso</em> → Relações: o campo <em>Parente</em> mostra <span class="kbd">Tent_01</span> e <em>Conectado</em> está marcado. Para ligar ossos que não foram extrudados, selecione o filho, depois o pai com <span class="kbd">Shift</span>, e use <span class="kbd">Ctrl+P</span> → <em>Conectado</em> (cola a cabeça na cauda do pai) ou <em>Manter deslocamento</em> (liga sem mover; aparece uma linha tracejada). <span class="kbd">Alt+P</span> desfaz. Isso só funciona no Modo de edição e com os ossos <em>dentro da mesma armação</em> — armações separadas precisam antes ser unidas com <span class="kbd">Ctrl+J</span>.</p>
+    </div>
+
+    <h3 style="font-family:var(--display); margin:2rem 0 0;">Parte C — Ligar a malha aos ossos</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">8</div><div>
+        <h4>Parentesco com pesos automáticos</h4>
+        <p>No Modo de objeto, clique no <span class="kbd">Tentaculo</span>, depois <span class="kbd">Shift</span>+clique na <span class="kbd">Rig_Tentaculo</span> (a armação por último) e use <span class="kbd">Ctrl+P</span> → <em>Com pesos automáticos</em>.</p>
+        <p class="why">Por quê: o Blender cria um <em>grupo de vértices</em> para cada osso, com o mesmo nome dele, e calcula quanto cada vértice obedece a cada osso. Confira na aba <em>Dados da malha</em> → Grupos de vértices.</p>
+      </div></div>
+      <div class="step"><div class="step-num">9</div><div>
+        <h4>Teste no Modo pose</h4>
+        <p>Selecione a armação e entre no Modo pose (<span class="kbd">Ctrl+Tab</span>). Clique num osso e gire com <span class="kbd">R</span>: o tentáculo dobra, e os ossos filhos acompanham o pai. Para voltar à pose de repouso, selecione tudo (<span class="kbd">A</span>) e use <span class="kbd">Alt+R</span>, <span class="kbd">Alt+G</span> e <span class="kbd">Alt+S</span>.</p>
+        <p class="why">Modo de edição altera o esqueleto em si; Modo pose só move os ossos para animar, sem mudar o esqueleto original.</p>
+      </div></div>
+    </div>
+
+    <h3 style="font-family:var(--display); margin:2rem 0 0;">Parte D — Pintura de pesos</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">10</div><div>
+        <h4>Entre na Pintura de pesos</h4>
+        <p>Faça uma dobra forte no Modo pose. No Modo de objeto, selecione a armação, depois <span class="kbd">Shift</span>+clique na malha e troque o modo para <em>Pintura de pesos</em> (<span class="kbd">Ctrl+Tab</span>). Agora <span class="kbd">Ctrl</span>+clique escolhe qual osso você está vendo.</p>
+      </div></div>
+      <div class="step"><div class="step-num">11</div><div>
+        <h4>Leia as cores</h4>
+        <p><strong style="color:var(--axis-z)">Azul</strong> = peso 0 (o osso não mexe no vértice). <strong style="color:var(--axis-x)">Vermelho</strong> = peso 1 (obedece totalmente). Verde e amarelo são intermediários. Uma transição suave entre dois ossos é o que faz a dobra ficar arredondada.</p>
+      </div></div>
+      <div class="step"><div class="step-num">12</div><div>
+        <h4>Corrija com os pincéis</h4>
+        <p>Use os pincéis <em>Adicionar</em>, <em>Subtrair</em> e <em>Desfocar</em> (blur), ajustando Peso e Força no cabeçalho. Ciclo de trabalho: <strong style="color:var(--text)">posar → pintar → testar outra pose → pintar de novo</strong>. Ao terminar, use o menu Pesos → <em>Normalizar tudo</em>.</p>
+        <p class="why">Por quê: os pesos automáticos acertam a maior parte, mas costumam errar nas dobras. Normalizar garante que a soma das influências em cada vértice seja 1.</p>
+      </div></div>
+    </div>
+
+    <h3 style="font-family:var(--display); margin:2rem 0 0;">Parte E — Osso de controle e restrição IK</h3>
+    <p>Girar osso por osso (cinemática direta, ou <strong style="color:var(--text)">FK</strong>) funciona, mas é trabalhoso. Com <strong style="color:var(--text)">cinemática inversa (IK)</strong>, você move só a ponta e a cadeia inteira se ajusta sozinha.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">13</div><div>
+        <h4>Crie o osso de controle</h4>
+        <p>No Modo de edição da armação, selecione a ponta de <span class="kbd">Tent_04</span>, pressione <span class="kbd">E</span> <span class="kbd">Z</span> <span class="kbd">0.5</span> e renomeie o novo osso para <span class="kbd">CTRL_IK</span>. Com ele selecionado, <span class="kbd">Alt+P</span> → <em>Limpar parente</em>. Na aba <em>Osso</em>, desmarque <em>Deformar</em>.</p>
+        <p class="why">Por quê: o controle precisa ser livre (sem pai na cadeia) e não pode deformar a malha — ele só serve para o animador pegar e mover.</p>
+      </div></div>
+      <div class="step"><div class="step-num">14</div><div>
+        <h4>Adicione a restrição</h4>
+        <p>No Modo pose, selecione <span class="kbd">Tent_04</span>, abra a aba <em>Restrições de osso</em> (ícone de osso com corrente) → Adicionar restrição de osso → <em>Cinemática inversa</em>. Alvo: <span class="kbd">Rig_Tentaculo</span>; Osso: <span class="kbd">CTRL_IK</span>; Comprimento da cadeia: <span class="kbd">4</span>.</p>
+        <p class="why">Por quê: o comprimento da cadeia diz quantos ossos, contando de baixo para cima a partir deste, a IK pode dobrar. Com 0, ela dobraria a armação inteira.</p>
+      </div></div>
+      <div class="step"><div class="step-num">15</div><div>
+        <h4>Teste e compare</h4>
+        <p>Selecione <span class="kbd">CTRL_IK</span> e mova com <span class="kbd">G</span>: o tentáculo inteiro se curva para alcançá-lo. Baixe a <em>Influência</em> da restrição para 0,5 e veja a mistura entre FK e IK; desligue e ligue a restrição pelo ícone de olho.</p>
+      </div></div>
+    </div>
+
+    <h3 style="font-family:var(--display); margin:2rem 0 0;">Parte F — Animação em loop</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">16</div><div>
+        <h4>Primeira chave</h4>
+        <p>Na linha do tempo, defina Início <span class="kbd">1</span> e Fim <span class="kbd">48</span>. No quadro 1, com <span class="kbd">CTRL_IK</span> selecionado no Modo pose, posicione-o à esquerda e pressione <span class="kbd">I</span> para inserir um quadro-chave.</p>
+      </div></div>
+      <div class="step"><div class="step-num">17</div><div>
+        <h4>Segunda chave</h4>
+        <p>Vá para o quadro 24, mova o controle para a direita e pressione <span class="kbd">I</span> de novo.</p>
+      </div></div>
+      <div class="step"><div class="step-num">18</div><div>
+        <h4>Feche o loop</h4>
+        <p>Volte ao quadro 1, selecione os ossos e copie a pose (<span class="kbd">Ctrl+C</span>). No quadro 48, cole (<span class="kbd">Ctrl+V</span>) e insira a chave (<span class="kbd">I</span>). Pressione <span class="kbd">Espaço</span>: o tentáculo balança em loop, sem pulo entre o fim e o começo.</p>
+        <p class="why">Por quê: primeira e última pose iguais é o princípio de qualquer ciclo — inclusive de um ciclo de caminhada de personagem.</p>
+      </div></div>
+    </div>
+
+    <div class="callout good">
+      <strong>Checkpoint</strong>
+      <p>Os 4 ossos estão numa única armação com nomes claros; o tentáculo dobra suavemente; o <span class="kbd">CTRL_IK</span> move a cadeia inteira; a animação repete sem engasgo.</p>
+    </div>
+
+    <h3 style="font-family:var(--display); margin:2.4rem 0 0;">Erros comuns</h3>
+    <div class="trouble-grid">
+      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>Ctrl+P não mostra "Conectado"</p></div><div class="fix"><span class="tag">Solução</span><p>Você está no Modo de objeto. Esse menu só aparece no Modo de edição da armação, com os dois ossos dentro dela.</p></div></div>
+      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>Ossos em armações separadas</p></div><div class="fix"><span class="tag">Solução</span><p><span class="kbd">Ctrl+A</span> → Todas as transformações, selecione as armações e una com <span class="kbd">Ctrl+J</span>.</p></div></div>
+      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>Malha deforma esquisito ou "explode"</p></div><div class="fix"><span class="tag">Solução</span><p>Escala não aplicada. Aplique com <span class="kbd">Ctrl+A</span> na malha e na armação antes de ligar os pesos.</p></div></div>
+      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>Erro "Bone Heat Weighting failed"</p></div><div class="fix"><span class="tag">Solução</span><p>Vértices duplicados: no Modo de edição da malha, <span class="kbd">M</span> → Por distância. Confira também a escala.</p></div></div>
+      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>A IK gira a armação inteira</p></div><div class="fix"><span class="tag">Solução</span><p>Comprimento da cadeia em 0. Coloque o número de ossos que devem dobrar (aqui, 4).</p></div></div>
+      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>Osso gira para o lado errado</p></div><div class="fix"><span class="tag">Solução</span><p>Rotação (roll) desalinhada: no Modo de edição, <span class="kbd">Shift+N</span> → Recalcular rotação.</p></div></div>
+    </div>
+
+    <div class="callout">
+      <strong>Agora, o baú</strong>
+      <p>O tentáculo usou tudo o que um rig precisa. O baú é o caso mais simples possível dessa mesma receita: um único osso, sem dobra e sem pintura de pesos. Siga para as próximas seções.</p>
+    </div>
+  </section>
+
   <section id="pesos">
-    <div class="sec-head"><span class="sec-num">02</span><h2>Weight Painting: por que o baú não precisa</h2></div>
-    <p class="lead-in">Em personagens, cada vértice tem um "peso" (0 a 1) indicando o quanto ele é influenciado por cada bone — é assim que um cotovelo dobra suavemente em vez de quebrar. Isso se chama <strong style="color:var(--text)">Weight Painting</strong>.</p>
+    <div class="sec-head"><span class="sec-num">03</span><h2>De volta ao baú: por que ele não precisa de pesos</h2></div>
+    <p class="lead-in">No tentáculo, cada vértice dividia sua obediência entre dois ossos vizinhos — é isso que fazia a dobra ficar suave. Esse ajuste fino é o <strong style="color:var(--text)">Weight Painting</strong>.</p>
     <div class="callout good">
       <strong>O caso do baú é o mais simples possível</strong>
       <p>A tampa inteira se move junto com um único bone — não há deformação parcial, então todos os vértices da tampa têm peso 1.0 para esse bone. O Blender resolve isso automaticamente ao usar "Automatic Weights" no parenting, sem precisar pintar peso manualmente.</p>
@@ -213,7 +349,7 @@ p{color:var(--text-dim);}
   </section>
 
   <section id="guia">
-    <div class="sec-head"><span class="sec-num">03</span><h2>Guia passo a passo — rig da tampa</h2></div>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Guia passo a passo — rig da tampa</h2></div>
     <p class="sec-sub">Continue a partir de <span class="kbd">bau_v05.blend</span> do Site 5/6. Lembre-se: a origem da tampa já foi posicionada na borda traseira no Site 2 — é exatamente ali que o bone precisa nascer.</p>
 
     <div class="steps">
@@ -258,7 +394,7 @@ p{color:var(--text-dim);}
   </section>
 
   <section id="animacao">
-    <div class="sec-head"><span class="sec-num">04</span><h2>Uma animação simples: abrir e fechar</h2></div>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Uma animação simples: abrir e fechar</h2></div>
     <p class="sec-sub">Keyframes marcam o valor de uma propriedade (aqui, a rotação do bone) em quadros específicos da timeline — o Blender interpola tudo entre eles.</p>
 
     <div class="pose-compare">
@@ -301,110 +437,6 @@ p{color:var(--text-dim);}
     </div>
   </section>
 
-  <section id="estudo">
-    <div class="sec-head"><span class="sec-num">05</span><h2>Estudo guiado: rigging de personagem</h2></div>
-    <p class="sec-sub">O baú usa um osso só. Para entender rigging de verdade — cadeias de ossos, restrições, pesos e animação — siga este roteiro junto com o curso gratuito <a href="https://www.youtube.com/watch?v=Ldki5txSn5U" target="_blank" rel="noopener">BEGINNER Blender Rigging Course (2026)</a>, do CGDive (Level 1 do "Rigging isn't Scary").</p>
-
-    <div class="callout">
-      <strong>Antes de começar</strong>
-      <p>Baixe o arquivo inicial gratuito pelo link na descrição do vídeo (academy.cgdive.com). O vídeo é em inglês: ative <span class="kbd">CC</span> → Configurações → Legendas → Traduzir automaticamente → Português. Use <span class="kbd">0,75×</span> nos trechos práticos e pause a cada ação. Não assista tudo de uma vez: são 5 etapas, sugeridas em 3 sessões (1–2 · 3–4 · 5).</p>
-    </div>
-
-    <table class="transform-table">
-      <thead><tr><th>No vídeo (EN)</th><th>No seu Blender (PT)</th><th>O que é</th></tr></thead>
-      <tbody>
-        <tr><td>Armature / Bone</td><td>Armação / Osso</td><td>Objeto que guarda os ossos. Ossos só se ligam entre si dentro da mesma armação</td></tr>
-        <tr><td>Head / Tail</td><td>Cabeça / Cauda</td><td>Base (onde o osso gira) e ponta do osso</td></tr>
-        <tr><td>Edit Mode / Pose Mode</td><td>Modo de edição / Modo pose</td><td>Montar o esqueleto × posar o esqueleto para animar</td></tr>
-        <tr><td>Parent / Connected</td><td>Parente / Conectado</td><td>Filho acompanha o pai; conectado = cabeça do filho grudada na cauda do pai</td></tr>
-        <tr><td>Constraint</td><td>Restrição</td><td>Regra que controla um osso automaticamente</td></tr>
-        <tr><td>Weight Paint</td><td>Pintura de pesos</td><td>Quanto cada osso influencia cada vértice (azul = 0, vermelho = 1)</td></tr>
-        <tr><td>Keyframe / Walk Cycle</td><td>Quadro-chave / Ciclo de caminhada</td><td>Pose registrada na timeline / passos que se repetem em loop</td></tr>
-      </tbody>
-    </table>
-
-    <div class="exercise">
-      <p class="ex-kicker">Etapa 1 · Lição 1 — Bone Basics</p>
-      <h3>Fundamentos dos ossos</h3>
-      <p>Marcadores: <span class="kbd">0:58</span> o que é rigging · <span class="kbd">1:36</span> armações e ossos · <span class="kbd">7:29</span> prática · <span class="kbd">12:34</span> nomes · <span class="kbd">14:35</span> parentesco · <span class="kbd">16:00</span> pesos automáticos</p>
-      <ol>
-        <li><span class="kbd">Shift+A</span> → Armação. Nas propriedades da armação, ative <em>Na frente</em> para ver os ossos através da malha.</li>
-        <li>No Modo de edição (<span class="kbd">Tab</span>), selecione a ponta do osso e pressione <span class="kbd">E</span>: o novo osso já nasce <strong style="color:var(--text)">conectado</strong>.</li>
-        <li>Renomeie cada osso com <span class="kbd">F2</span>. Lados do corpo levam sufixo <span class="kbd">.L</span> / <span class="kbd">.R</span>.</li>
-        <li>Parentesco manual: clique no filho, <span class="kbd">Shift</span>+clique no pai, <span class="kbd">Ctrl+P</span> → Conectado ou Manter deslocamento. Desfazer: <span class="kbd">Alt+P</span>.</li>
-        <li>Ligue a malha: selecione a malha, depois a armação (por último) e <span class="kbd">Ctrl+P</span> → Com pesos automáticos.</li>
-        <li>Teste no Modo pose (<span class="kbd">Ctrl+Tab</span>) girando com <span class="kbd">R</span>. Voltar ao repouso: <span class="kbd">Alt+R</span> / <span class="kbd">Alt+G</span>.</li>
-      </ol>
-      <div class="callout good"><strong>Checkpoint</strong><p>Todos os ossos estão numa única armação, com nomes claros; girar o pai leva os filhos junto; a malha deforma com os ossos.</p></div>
-      <p><strong style="color:var(--text)">Responda:</strong> qual a diferença entre mexer num osso no Modo de edição e no Modo pose? Por que ossos de armações diferentes não podem ser conectados?</p>
-    </div>
-
-    <div class="exercise">
-      <p class="ex-kicker">Etapa 2 · Lição 2 — Core Rigging Mechanism</p>
-      <h3>O mecanismo central do rigging</h3>
-      <p>Descubra qual <strong style="color:var(--text)">restrição</strong> o instrutor apresenta como indispensável para todo rigger, e a diferença entre ossos que <em>deformam</em> a malha e ossos de <em>controle</em>.</p>
-      <ol>
-        <li>Crie a restrição junto com o instrutor (Modo pose → aba <em>Restrições de osso</em>).</li>
-        <li>Mova o osso de controle e observe a reação do osso restrito.</li>
-        <li>Varie a <em>Influência</em> de 0 a 1 e ligue/desligue a restrição para comparar.</li>
-      </ol>
-      <div class="callout good"><strong>Checkpoint</strong><p>Você move o rig pelo osso de controle, sem tocar nos ossos que deformam, e sabe dizer o nome da restrição.</p></div>
-      <p><strong style="color:var(--text)">Responda:</strong> qual é a restrição e o que ela faz? Por que separar controle e deformação facilita a animação?</p>
-    </div>
-
-    <div class="exercise">
-      <p class="ex-kicker">Etapa 3 · Lição 3 — Weight Painting</p>
-      <h3>Pintura de pesos</h3>
-      <ol>
-        <li>Selecione a armação, depois a malha, e mude para <em>Pintura de pesos</em>. <span class="kbd">Ctrl</span>+clique escolhe o osso.</li>
-        <li>Coloque o rig numa pose difícil (cotovelo ou joelho dobrado) para enxergar os problemas.</li>
-        <li>Corrija com os pincéis Adicionar, Subtrair e Suavizar, com simetria em X quando o modelo for simétrico.</li>
-        <li>Teste a pose de novo. Repita o ciclo <em>posar → pintar → testar</em> até ficar suave.</li>
-      </ol>
-      <div class="callout good"><strong>Checkpoint</strong><p>Nenhum vértice fica para trás ou é puxado pelo osso errado; as dobras deformam suavemente.</p></div>
-      <p><strong style="color:var(--text)">Responda:</strong> por que os pesos automáticos nem sempre bastam? O que significa um vértice com peso 0,5 em dois ossos?</p>
-    </div>
-
-    <div class="exercise">
-      <p class="ex-kicker">Etapa 4 · Lição 4 — Blender Animation Basics</p>
-      <h3>Noções de animação</h3>
-      <ol>
-        <li>Defina Início/Fim da animação na timeline, como no vídeo.</li>
-        <li>Crie as poses-chave do ciclo de caminhada e insira quadros-chave nos ossos de controle (<span class="kbd">I</span>).</li>
-        <li>Reproduza com <span class="kbd">Espaço</span>. Copie a primeira pose para o último quadro para fechar o loop.</li>
-      </ol>
-      <div class="callout good"><strong>Checkpoint</strong><p>O personagem caminha em loop sem engasgo e a deformação continua boa em movimento (se não, volte à Etapa 3).</p></div>
-      <p><strong style="color:var(--text)">Responda:</strong> que problemas do rig só apareceram quando você animou?</p>
-    </div>
-
-    <div class="exercise">
-      <p class="ex-kicker">Etapa 5 · Lição 5 — Challenge</p>
-      <h3>Desafio: rig de algo novo</h3>
-      <ol>
-        <li>Tente cada parte do desafio do vídeo <em>antes</em> de ver a solução; use a solução só para conferir.</li>
-        <li>Aplique o processo num objeto seu (peça do jogo de tabuleiro, prop ou personagem simples).</li>
-        <li>Antes de criar ossos, esboce as articulações e quem é pai de quem.</li>
-        <li>Monte, conecte, ligue à malha, ajuste os pesos e anime de 2 a 4 segundos.</li>
-      </ol>
-      <div class="callout good"><strong>Checkpoint</strong><p>O objeto se move só pelos controles, sem deformações estranhas, e você consegue explicar a hierarquia de ossos.</p></div>
-    </div>
-
-    <h3 style="font-family:var(--display); margin-top:2.4rem;">Erros comuns</h3>
-    <div class="trouble-grid">
-      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>Ctrl+P não mostra "Conectado"</p></div><div class="fix"><span class="tag">Solução</span><p>Você está no Modo de objeto. Una as armações e entre no Modo de edição antes do Ctrl+P.</p></div></div>
-      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>Ossos em armações separadas</p></div><div class="fix"><span class="tag">Solução</span><p><span class="kbd">Ctrl+A</span> → Todas as transformações, selecione as armações e una com <span class="kbd">Ctrl+J</span>.</p></div></div>
-      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>Malha deforma esquisito ou "explode"</p></div><div class="fix"><span class="tag">Solução</span><p>Escala não aplicada. Aplique com <span class="kbd">Ctrl+A</span> na malha e na armação antes de ligar os pesos.</p></div></div>
-      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>Erro "Bone Heat Weighting failed"</p></div><div class="fix"><span class="tag">Solução</span><p>Vértices duplicados: no Modo de edição da malha, <span class="kbd">M</span> → Por distância. Confira também a escala.</p></div></div>
-      <div class="trouble-item"><div class="prob"><span class="tag">Problema</span><p>Osso gira para o lado errado</p></div><div class="fix"><span class="tag">Solução</span><p>Roll desalinhado: no Modo de edição, <span class="kbd">Shift+N</span> → Recalcular rotação.</p></div></div>
-    </div>
-
-    <div class="callout">
-      <strong>Entrega do estudo guiado</strong>
-      <p>Respostas das 5 etapas (PDF) · .blend do curso com rig e ciclo de caminhada · .blend do desafio com o esboço da hierarquia · GIF ou vídeo curto (até 10 s) do rig em movimento.</p>
-    </div>
-    <p style="font-size:0.8rem; color:var(--text-faint);">Lições 2 a 5 sem marcador de tempo: localize-as pelos capítulos da barra de progresso do vídeo. Créditos do curso e do arquivo inicial: CGDive.</p>
-  </section>
-
   <section id="fechamento">
     <div class="sec-head"><span class="sec-num">06</span><h2>Fechando a série: o pipeline completo</h2></div>
     <p class="lead-in">Do cubo padrão a um asset animado, exportável e pronto para qualquer engine — este foi o caminho:</p>
@@ -416,7 +448,7 @@ p{color:var(--text-dim);}
       <div class="fc-row"><span class="fc-site">Site 4</span><p>Materiais PBR — Principled BSDF, madeira e metal com Base Color/Roughness/Metallic</p></div>
       <div class="fc-row"><span class="fc-site">Site 5</span><p>Otimização — poly budget, conceito de bake, limpeza de malha, checklist game-ready</p></div>
       <div class="fc-row"><span class="fc-site">Site 6</span><p>Exportação — FBX e glTF, eixos, escala, panorama por engine</p></div>
-      <div class="fc-row"><span class="fc-site">Site 7</span><p>Rigging e animação — armature, bone único, parenting, keyframes de abertura</p></div>
+      <div class="fc-row"><span class="fc-site">Site 7</span><p>Rigging e animação — cadeia de ossos, pesos, controle IK, rig da tampa e keyframes de abertura</p></div>
     </div>
 
     <div class="checklist">
